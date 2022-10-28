@@ -1,0 +1,1 @@
+This is a stub file to make Git aware of the test artifact directory.

@@ -1,0 +1,19 @@
+from datetime import datetime
+
+from oce_ecomm_abv_calculation.sample_statistics.vanilla import VanillaSampleStatistics
+from ..artifacts.sample_df import sample_customer_order_df
+
+
+class TestInit:
+    def test_filters_df_between_start_and_end_date(self):
+        my_object = VanillaSampleStatistics(
+            dataset=sample_customer_order_df,
+            response_col='r_response',
+            start_time=datetime(2022, 1, 2),
+            end_time=datetime(2022, 1, 3)
+        )
+
+        print(my_object)
+
+        # Only the three rows on 2022-01-02 would be included (start is inclusive, end is exclusive)
+        assert my_object.dataset.shape[0] == 3

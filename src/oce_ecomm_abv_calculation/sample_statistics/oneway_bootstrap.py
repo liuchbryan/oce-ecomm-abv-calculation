@@ -53,16 +53,16 @@ class OnewayBootstrapStatistics(SampleStatistics):
                 self.dataset
                 .groupby(COL_RANDOMIZATION_UNIT_ID)
                 .agg(
-                    randunit_response_sum=pd.NamedAgg(column=self.response_col, aggfunc="sum"),
-                    randunit_response_count=pd.NamedAgg(column=COL_ANALYSIS_UNIT_ID, aggfunc="nunique"),
+                    response_sum=pd.NamedAgg(column=self.response_col, aggfunc="sum"),
+                    response_count=pd.NamedAgg(column=COL_ANALYSIS_UNIT_ID, aggfunc="nunique"),
                     weight=pd.NamedAgg(column=COL_ANALYSIS_UNIT_ID,
                                        aggfunc=lambda does_not_matter: np.random.default_rng().poisson(lam=1.0)),
-            )
+                )
                 .reset_index()
         )
 
-        sum_weighted_sum = np.sum(sum_weight_df["randunit_response_sum"] * sum_weight_df["weight"])
-        count_weighted_sum = np.sum(sum_weight_df["randunit_response_count"] * sum_weight_df["weight"])
+        sum_weighted_sum = np.sum(sum_weight_df["response_sum"] * sum_weight_df["weight"])
+        count_weighted_sum = np.sum(sum_weight_df["response_count"] * sum_weight_df["weight"])
 
         self.latest_mean = sum_weighted_sum / count_weighted_sum
 

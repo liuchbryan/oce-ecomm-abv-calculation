@@ -9,7 +9,7 @@ def get_default_dataset_by_name(dataset_name: Optional[str]) -> Optional[pd.Data
         return None
     elif "uci_online_retail_ii" in dataset_name.lower():
         if "customer_order_item" in dataset_name.lower():
-            uci_online_retail_ii_customer_order_item_view()
+            return uci_online_retail_ii_customer_order_item_view()
         elif "customer_order" in dataset_name.lower():
             return uci_online_retail_ii_customer_order_view()
 

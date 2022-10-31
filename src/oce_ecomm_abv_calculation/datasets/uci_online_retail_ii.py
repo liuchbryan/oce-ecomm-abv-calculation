@@ -42,16 +42,22 @@ def _download_raw_dataset_from_internet(path) -> None:
 class UCIOnlineRetailIIDataset(ECommerceDataset):
     def __init__(
         self,
-        path=f"{os.path.dirname(__file__)}/../../../data/online_retail_II.xlsx"
+        path=f"{os.path.dirname(__file__)}/../../../data"
     ):
-        if not os.path.exists(path):
-            # Download dataset from the internet if no file exist at provided path
-            _download_raw_dataset_from_internet(path)
+        # `path` can be directory or file, distinguish the use cases
+        if os.path.isdir(path):
+            file_path = os.path.join(path, "online_retail_II.xlsx")
+        else:
+            file_path = path
+
+        # Download dataset from the internet if no file exist at provided path
+        if not os.path.exists(file_path):
+            _download_raw_dataset_from_internet(file_path)
 
         self.df = (
             pd.concat(
-                [pd.read_excel(path, "Year 2009-2010", index_col=None),
-                 pd.read_excel(path, "Year 2010-2011", index_col=None)],
+                [pd.read_excel(file_path, "Year 2009-2010", index_col=None),
+                 pd.read_excel(file_path, "Year 2010-2011", index_col=None)],
                 ignore_index=True
             )
         )

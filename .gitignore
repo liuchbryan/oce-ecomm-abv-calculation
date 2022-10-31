@@ -1,3 +1,11 @@
+# Project specific
+data/*.parquet
+data/*.xlsx
+data/*.csv
+tests/artifacts/*.parquet
+tests/artifacts/*.xlsx
+tests/artifacts/*.csv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

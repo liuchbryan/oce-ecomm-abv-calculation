@@ -5,6 +5,32 @@ from ..artifacts.sample_df import sample_customer_order_df
 
 
 class TestInit:
+    def test_can_take_named_default_datasets(self):
+        # Loading this should not throw any exceptions
+        VanillaSampleStatistics(
+            dataset="uci_online_retail_ii_customer_order_view",
+            response_col='r_BasketValue',
+        )
+
+    def test_populates_dataset_name_field(self):
+        named_dataset = (
+            VanillaSampleStatistics(
+                dataset="uci_online_retail_ii_customer_order_view",
+                response_col='r_BasketValue',
+            )
+        )
+
+        assert named_dataset.dataset_name == "uci_online_retail_ii_customer_order_view"
+
+        custom_dataset = (
+            VanillaSampleStatistics(
+                dataset=sample_customer_order_df,
+                response_col='r_response',
+            )
+        )
+
+        assert custom_dataset.dataset_name == "custom"
+
     def test_filters_df_between_start_and_end_date(self):
         my_object = VanillaSampleStatistics(
             dataset=sample_customer_order_df,

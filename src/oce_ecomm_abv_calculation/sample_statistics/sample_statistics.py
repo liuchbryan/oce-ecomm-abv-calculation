@@ -20,7 +20,9 @@ class SampleStatistics(ABC, BaseModel):
 
     @root_validator(pre=True)
     def set_dataset_name(cls, values) -> str:
-        if not isinstance(values["dataset"], str):
+        if isinstance(values["dataset"], str):
+            values['dataset_name'] = values["dataset"]
+        else:
             values['dataset_name'] = "custom"
         return values
 
@@ -35,10 +37,8 @@ class SampleStatistics(ABC, BaseModel):
             raise ValueError("No dataframe loaded. This may be due to an invalid default"
                              "dataset name or an None being passed to the `dataset` argument.")
 
-        assert "EventReceivedTime" in candidate_dataset.columns, \
-            "Dataset must contain the column `EventReceivedTime`."
-        assert values["response_col"] in candidate_dataset.columns, \
-            f"Dataset must contain the column `{values['response_col']}`."
+        assert "EventReceivedTime" in df.columns, "Dataset must contain the column `EventReceivedTime`."
+        assert values["response_col"] in df.columns, f"Dataset must contain the column `{values['response_col']}`."
 
         return(
             df[

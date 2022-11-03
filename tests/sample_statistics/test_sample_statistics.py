@@ -7,14 +7,15 @@ from ..artifacts.sample_df import sample_customer_order_df
 class TestInit:
     def test_can_take_named_default_datasets_and_populate_dataset_name(self):
         # Loading this should not throw any exceptions
+        # Using Olist Brazilian e-Commerce dataset, which is smaller
         named_dataset = (
             VanillaSampleStatistics(
-                dataset="uci_online_retail_ii_customer_order_view",
+                dataset="olist_brazilian_ecommerce_customer_order_view",
                 response_col='r_BasketValue',
             )
         )
 
-        assert named_dataset.dataset_name == "uci_online_retail_ii_customer_order_view"
+        assert named_dataset.dataset_name == "olist_brazilian_ecommerce_customer_order_view"
 
     def test_populates_dataset_name_as_custom_for_user_supplied_dataframes(self):
         custom_dataset = (

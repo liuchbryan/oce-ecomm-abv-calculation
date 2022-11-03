@@ -40,3 +40,18 @@ class TestInit:
 
         assert my_dataset.df is not None
         assert my_dataset.df.shape[0] > 1000000
+
+
+class TestStandardizedCustomerOrderDataView:
+    def test_output_has_the_required_columns(self):
+        target_file_path = f"{os.path.dirname(__file__)}/../artifacts/online_retail_II.xlsx"
+        my_dataset = UCIOnlineRetailIIDataset(path=target_file_path).standardized_customer_order_data_view()
+
+        assert all(
+            required_col in my_dataset.columns
+            for required_col in ["RandomizationUnitId",
+                                 "AnalysisUnitId",
+                                 "EventReceivedTime",
+                                 "r_BasketValue",
+                                 "r_BasketSize"]
+        )

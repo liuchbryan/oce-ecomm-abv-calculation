@@ -15,6 +15,7 @@ class ECommerceDataset(ABC):
         with at least the following columns:
         RandomizationUnitId: The customer identifier
         AnalysisUnitId: The order identifier
+        EventReceivedTime: The time the order occurred
         r_BasketValue: The value of the order/basket
         r_BasketSize: The size (number of items) of the order/basket
         """
@@ -29,6 +30,7 @@ class ECommerceDataset(ABC):
         SecondaryUnitId: The product / stock keeping unit (SKU) identifier
         AnalysisUnitId: The identifier for the item within an order 
                         (often in format of `<order>_<item>`)
+        EventReceivedTime: The time the order occurred
         r_SellingPrice: The price of the item sold
         """
         pass

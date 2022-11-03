@@ -34,9 +34,9 @@ stock_code_exclusion_list = [
 ]
 
 
-def _download_raw_dataset_from_internet(path) -> None:
+def _download_raw_dataset_from_internet(out_path) -> None:
     dataset_url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00502/online_retail_II.xlsx'
-    wget.download(dataset_url, out=path)
+    wget.download(dataset_url, out=out_path)
 
 
 class UCIOnlineRetailIIDataset(ECommerceDataset):
@@ -44,6 +44,9 @@ class UCIOnlineRetailIIDataset(ECommerceDataset):
         self,
         path=f"{os.path.dirname(__file__)}/../../../data"
     ):
+        """
+        :param path: Path to the directory where the datafile is stored / should be downloaded to
+        """
         # `path` can be directory or file, distinguish the use cases
         if os.path.isdir(path):
             file_path = os.path.join(path, "online_retail_II.xlsx")
@@ -52,7 +55,7 @@ class UCIOnlineRetailIIDataset(ECommerceDataset):
 
         # Download dataset from the internet if no file exist at provided path
         if not os.path.exists(file_path):
-            _download_raw_dataset_from_internet(file_path)
+            _download_raw_dataset_from_internet(out_path=file_path)
 
         self.df = (
             pd.concat(
@@ -154,8 +157,12 @@ class UCIOnlineRetailIIDataset(ECommerceDataset):
                 num_orders=pd.NamedAgg(column="Invoice", aggfunc="nunique"),
                 num_products=pd.NamedAgg(column="StockCode", aggfunc="nunique"),
                 num_units=pd.NamedAgg(column="Quantity", aggfunc="sum"),
-                total_sales=pd.NamedAgg(column="Subtotal", aggfunc="sum")
+                total_sales=pd.NamedAgg(column="Subtotal", aggfunc="sum"),
+                start_date=pd.NamedAgg(column="InvoiceDate", aggfunc="min"),
+                end_date = pd.NamedAgg(column="InvoiceDate", aggfunc="max"),
             )
         )
+
+        return_df["duration_days"] = return_df["end_date"] - return_df["start_date"]
 
         return return_df

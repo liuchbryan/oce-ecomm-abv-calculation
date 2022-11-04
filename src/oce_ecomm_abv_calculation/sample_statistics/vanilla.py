@@ -1,5 +1,9 @@
-from .sample_statistics import SampleStatistics
+import os
+import pandas as pd
 from pydantic import BaseModel, validator
+import time
+
+from .sample_statistics import SampleStatistics
 
 
 class VanillaSampleStatistics(SampleStatistics, BaseModel):
@@ -21,3 +25,34 @@ class VanillaSampleStatistics(SampleStatistics, BaseModel):
 
     def count(self):
         return self.dataset["AnalysisUnitId"].nunique()
+
+    def save_latest_result_as_pd_df(self, path=None) -> None:
+        results_df = (
+            pd.DataFrame([
+                {"dataset_name": self.dataset_name,
+                 "response_col": self.response_col,
+                 "start_time": self.start_time,
+                 "end_time": self.end_time,
+                 "sample_mean": self.mean(),
+                 "sample_standard_error": self.standard_error(),
+                 "sample_variance": self.variance(),
+                 "count": self.count()}
+            ])
+        )
+
+        if path is None:
+            output_path = (
+                f"{os.path.dirname(__file__)}/../../../data/" +
+                "_".join([
+                    "expt",
+                    "vanilla",
+                    self.dataset_name.replace("_", "-"),
+                    self.response_col.replace("_", "-"),
+                    str(int(time.time()))
+                ]) +
+                ".parquet"
+            )
+        else:
+            output_path = path
+
+        results_df.to_parquet(output_path)

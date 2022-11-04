@@ -26,7 +26,7 @@ class VanillaSampleStatistics(SampleStatistics, BaseModel):
     def count(self):
         return self.dataset["AnalysisUnitId"].nunique()
 
-    def save_latest_result_as_pd_df(self, path=None) -> None:
+    def save_statistics_as_pd_df(self, path=None) -> None:
         results_df = (
             pd.DataFrame([
                 {"dataset_name": self.dataset_name,

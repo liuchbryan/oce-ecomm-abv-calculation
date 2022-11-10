@@ -132,12 +132,12 @@ _params_olist_basketsize_normalized = {
         "clip": (0, 10),
     },
     "xlim": {
-        "zoomed_out": (0, 6),
-        "zoomed_in": (0, 6)
+        "zoomed_out": (0, 6.1),
+        "zoomed_in": (0, 6.1)
     },
     "ylim": {
-        "zoomed_out": (0, 6),
-        "zoomed_in": (0, 6)
+        "zoomed_out": (0, 6.1),
+        "zoomed_in": (0, 6.1)
     },
 }
 
@@ -383,7 +383,7 @@ def hist_zoomed_out_plot(plot_dataset_df: pd.DataFrame,
                          size: float = 3.0) -> sns.JointGrid:
     output_plot = (
         sns.jointplot(
-            data=plot_dataset_df.sample(frac=plot_params["kde"]["sample_frac"]),
+            data=plot_dataset_df.sample(frac=plot_params["hist"]["sample_frac"]),
             x=next_col_name(response_col),
             y=response_col,
             kind="hist",
@@ -408,7 +408,7 @@ def hist_zoomed_in_plot(plot_dataset_df: pd.DataFrame,
                         size: float = 3.0) -> sns.JointGrid:
     output_plot = (
         sns.jointplot(
-            data=plot_dataset_df.sample(frac=plot_params["kde"]["sample_frac"]),
+            data=plot_dataset_df.sample(frac=plot_params["hist"]["sample_frac"]),
             x=next_col_name(response_col),
             y=response_col,
             kind="hist",

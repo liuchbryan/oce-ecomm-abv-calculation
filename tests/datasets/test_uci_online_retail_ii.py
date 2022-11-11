@@ -42,6 +42,31 @@ class TestInit:
         assert my_dataset.df.shape[0] > 1000000
 
 
+class TestCleanDataView:
+    def test_output_has_unique_key_as_invoice_stockcode_price(self):
+        # The same (Invoice, StockCode, Price) can appear in multiple rows.
+        # Think of your receipt when buying multiple units of the same product in the supermarket, the units are
+        # sometimes combined, sometimes listed as separated entries, and sometimes have another product in between.
+        # In addition, same (Invoice, StockCode, Price) can have different `InvoiceDate`, and `Description`. This
+        # is likely a data issue, but needs to be taken into account when generating various views.
+        # This test ensures we at least have a unique key (as (Invoice, StockCode, Price) in the clean data view.
+        target_file_path = f"{os.path.dirname(__file__)}/../artifacts/online_retail_II.xlsx"
+        my_dataset = UCIOnlineRetailIIDataset(path=target_file_path).clean_data_view()
+
+        assert(
+            my_dataset.drop_duplicates(
+                subset=["Invoice", "StockCode", "Price"]).shape[0] ==
+            my_dataset.shape[0]
+        )
+
+    def test_output_adds_subtotal_columns(self):
+        # The price column refers to the price per unit - it would be easier to have a running total
+        target_file_path = f"{os.path.dirname(__file__)}/../artifacts/online_retail_II.xlsx"
+        my_dataset = UCIOnlineRetailIIDataset(path=target_file_path).clean_data_view()
+
+        assert "Subtotal" in my_dataset.columns
+
+
 class TestStandardizedCustomerOrderDataView:
     def test_output_has_the_required_columns(self):
         target_file_path = f"{os.path.dirname(__file__)}/../artifacts/online_retail_II.xlsx"

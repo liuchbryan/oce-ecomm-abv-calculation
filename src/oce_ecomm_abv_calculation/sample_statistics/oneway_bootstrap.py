@@ -1,4 +1,3 @@
-from datetime import datetime
 import numpy as np
 import pandas as pd
 import os
@@ -106,7 +105,7 @@ class OnewayBootstrapStatistics(SampleStatistics):
         return se ** 2 * self.count()
 
     def count(self) -> int:
-        return self.dataset.shape[0]
+        return self.dataset["AnalysisUnitId"].nunique()
 
     def save_latest_result_as_pd_df(self, path=None) -> None:
         results_df = (

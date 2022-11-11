@@ -85,6 +85,18 @@ class UCIOnlineRetailIIDataset(ECommerceDataset):
                 .astype({"StockCode": "str", "Customer ID": int})
             )
 
+            # The minimal key for this dataset is ("Invoice", "StockCode", "Description", "InvoiceDate", "Price")
+            # We trim that down to ("Invoice", "StockCode", "Price"). See associated unit test for more details.
+            # Removes ~33k rows (3.12% of total) but functionally should not make very little difference
+            self.cleaned_df = (
+                self.cleaned_df
+                .groupby(["Invoice", "StockCode", "Price", "Customer ID", "Country"])
+                .agg(Description=pd.NamedAgg(column="Description", aggfunc="first"),
+                     Quantity=pd.NamedAgg(column="Quantity", aggfunc="sum"),
+                     InvoiceDate=pd.NamedAgg(column="InvoiceDate", aggfunc="min"))
+                .reset_index()
+            )
+
             self.cleaned_df['Subtotal'] = (
                     self.cleaned_df['Quantity'] * self.cleaned_df['Price']
             )
@@ -120,14 +132,19 @@ class UCIOnlineRetailIIDataset(ECommerceDataset):
             cleaned_df = self.clean_data_view()
 
             # Create index for each item/unit of the same product bought
-            # and explode the dataframe so that each row contains one item in each order
+            # and explode the dataframe so that each row contains one item at a certain price in each order
             cleaned_df['ItemIndex'] = (
                 cleaned_df['Quantity'].apply(lambda quantity: list(range(1, quantity + 1)))
             )
             target_df = cleaned_df.explode(column="ItemIndex", ignore_index=True)
             target_df['AnalysisUnitId'] = (
                 target_df.apply(
-                    lambda row: str(row['Invoice']) + "_" + row['StockCode'] + "_" + str(row['ItemIndex']),
+                    lambda row: (
+                        str(row['Invoice']) + "_" +
+                        row['StockCode'] + "_" +
+                        str(row['Price']) + "_" +
+                        str(row['ItemIndex'])
+                    ),
                     axis="columns"
                 )
             )

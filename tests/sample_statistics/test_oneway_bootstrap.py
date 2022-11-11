@@ -32,7 +32,7 @@ class TestInit:
 
 
 class TestMean:
-    def test_successive_calls_returns_non_determininstic_values(self):
+    def test_successive_calls_returns_non_deterministic_values(self):
         # Two bootstrap means are most likely to be different form each other
         oneway_bootstrap = (
             OnewayBootstrapStatistics(
@@ -40,8 +40,11 @@ class TestMean:
                 response_col='r_response'
             )
         )
-
-        assert oneway_bootstrap.mean() != oneway_bootstrap.mean()
+        try:
+            assert oneway_bootstrap.mean() != oneway_bootstrap.mean()
+        except AssertionError:
+            # Try again if two successive calls happen to return the same mean (which happens)
+            assert oneway_bootstrap.mean() != oneway_bootstrap.mean()
 
     def test_populates_latest_mean_class_variable(self):
         oneway_bootstrap = (

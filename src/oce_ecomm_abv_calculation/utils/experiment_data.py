@@ -41,6 +41,7 @@ def consolidate_experiment_data_files(
         else:
             acc_df = pd.concat([acc_df, record_df])
     acc_df = acc_df.reset_index(drop=True)
+    acc_df = acc_df[acc_df["end_time"] > acc_df["start_time"]]
 
     out_file_path = (
         "_".join([

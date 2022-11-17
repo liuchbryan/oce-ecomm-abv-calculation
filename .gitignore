@@ -1,5 +1,4 @@
 # Project specific
-data/*.parquet
 data/*.xlsx
 data/*.csv
 tests/artifacts/*.parquet

@@ -1,0 +1,15 @@
+data/plotdata_svbse_asos-customer-order-item-view_r-SellingPrice.parquet filter=lfs diff=lfs merge=lfs -text
+data/expt_oneway_olist-brazilian-ecommerce-customer-order-view_r-BasketValue_consolidated.parquet filter=lfs diff=lfs merge=lfs -text
+data/expt_oneway_uci-online-retail-ii-customer-order-view_r-BasketSize_consolidated.parquet filter=lfs diff=lfs merge=lfs -text
+data/expt_oneway_uci-online-retail-ii-customer-order-view_r-BasketValue_consolidated.parquet filter=lfs diff=lfs merge=lfs -text
+data/expt_vanilla_olist-brazilian-ecommerce-customer-order-view_r-BasketValue_consolidated.parquet filter=lfs diff=lfs merge=lfs -text
+data/expt_vanilla_uci-online-retail-ii-customer-order-view_r-BasketValue_consolidated.parquet filter=lfs diff=lfs merge=lfs -text
+data/plotdata_svbse_asos-customer-order-view_r-BasketSize.parquet filter=lfs diff=lfs merge=lfs -text
+data/plotdata_svbse_asos-customer-order-view_r-BasketValue.parquet filter=lfs diff=lfs merge=lfs -text
+data/expt_oneway_olist-brazilian-ecommerce-customer-order-item-view_r-SellingPrice_consolidated.parquet filter=lfs diff=lfs merge=lfs -text
+data/expt_vanilla_olist-brazilian-ecommerce-customer-order-item-view_r-SellingPrice_consolidated.parquet filter=lfs diff=lfs merge=lfs -text
+data/expt_vanilla_olist-brazilian-ecommerce-customer-order-view_r-BasketSize_consolidated.parquet filter=lfs diff=lfs merge=lfs -text
+data/expt_vanilla_uci-online-retail-ii-customer-order-item-view_r-SellingPrice_consolidated.parquet filter=lfs diff=lfs merge=lfs -text
+data/expt_vanilla_uci-online-retail-ii-customer-order-view_r-BasketSize_consolidated.parquet filter=lfs diff=lfs merge=lfs -text
+data/expt_oneway_olist-brazilian-ecommerce-customer-order-view_r-BasketSize_consolidated.parquet filter=lfs diff=lfs merge=lfs -text
+data/expt_oneway_uci-online-retail-ii-customer-order-item-view_r-SellingPrice_consolidated.parquet filter=lfs diff=lfs merge=lfs -text

@@ -1,3 +1,6 @@
+# Measuring e-Commerce Metric Changes in Online Experiments
+
+
 ## Setup
 This file assumes you have access to a \*nix-like machine (both MacOS or
 Linux would do). If you have a Windows machine, the notebook should still work

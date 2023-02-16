@@ -8,24 +8,33 @@ from typing import List
 from .sample_statistics import SampleStatistics
 
 COL_RANDOMIZATION_UNIT_ID = "RandomizationUnitId"
+COL_SECONDARY_UNIT_ID = "SecondaryUnitId"
 COL_ANALYSIS_UNIT_ID = "AnalysisUnitId"
 
+COL_WEIGHT_RANDOMIZATION_UNIT = "weight_RandomizationUnit"
+COL_WEIGHT_SECONDARY_UNIT = "weight_SecondaryUnit"
+COL_WEIGHT = "weight"
 
-class OnewayBootstrapStatistics(SampleStatistics):
+
+class TwowayBootstrapStatistics(SampleStatistics):
 
     # Some fields to enable saving the output
     latest_mean: float = None
     # List of bootstrap means to calculate the bootstrap standard error (by taking the standard deviation)
     latest_means: List[float] = None
     latest_standard_error: float = None
+    num_weights_generated: int = 0
+    random_seed: int = None
 
     @validator('dataset')
     def check_column_name_exists(cls, candidate_dataset) -> pd.DataFrame:
         assert (
-                (COL_ANALYSIS_UNIT_ID in candidate_dataset.columns) and
-                (COL_RANDOMIZATION_UNIT_ID in candidate_dataset.columns)
+            (COL_ANALYSIS_UNIT_ID in candidate_dataset.columns) and
+            (COL_RANDOMIZATION_UNIT_ID in candidate_dataset.columns) and
+            (COL_SECONDARY_UNIT_ID in candidate_dataset.columns)
         ), \
-            f"Dataset must contain the column {COL_RANDOMIZATION_UNIT_ID} and {COL_ANALYSIS_UNIT_ID}."
+            f"Dataset must contain the column {COL_RANDOMIZATION_UNIT_ID}, {COL_SECONDARY_UNIT_ID} " \
+            f"and {COL_ANALYSIS_UNIT_ID}."
         return candidate_dataset
 
     @validator('latest_mean', pre=True, always=True)
@@ -40,36 +49,55 @@ class OnewayBootstrapStatistics(SampleStatistics):
     def set_latest_standard_error_to_none(cls, _) -> None:
         return None
 
+    @validator('num_weights_generated', pre=True, always=True)
+    def set_num_weights_generated_to_zero(cls, _) -> int:
+        return 0
+
+    @validator('random_seed', pre=True, always=True)
+    def set_random_seed(cls, _) -> int:
+        return np.random.default_rng().integers(2147483647)
+
     def mean(self) -> float:
         """
-        Generate one one-way bootstrap sample mean of `response_col`. This is done by
-        (1) Resampling `dataset` where each `RandomizationUnitId` gets the same Poisson(1) weight, and
-        (2) Calculating the sample mean (over all `AnalysisUnitId`s) of the resample.
+        Generate one two-way bootstrap sample mean of `response_col`. This is done by
+        (1) Assigning each `RandomizationUnitId` and `SecondaryUnitId` a Poisson(1) weight,
+        (2) Resampling `dataset` where each row is weighted by the product of the `RandomizationUnitId` and
+            `SecondaryUnitId` weights. This means many rows can be zero-weighted.
+        (3) Calculating the weighted sample mean of the resample.
         The function also updates the `latest_mean` class variable.
-        :return: Sample mean of a one-way bootstrap resample
+        :return: Sample mean of a two-way bootstrap resample
         """
-        sum_weight_df = (
-                self.dataset
-                .groupby(COL_RANDOMIZATION_UNIT_ID)
-                .agg(
-                    response_sum=pd.NamedAgg(column=self.response_col, aggfunc="sum"),
-                    response_count=pd.NamedAgg(column=COL_ANALYSIS_UNIT_ID, aggfunc="nunique"),
-                    weight=pd.NamedAgg(column=COL_ANALYSIS_UNIT_ID,
-                                       aggfunc=lambda does_not_matter: np.random.default_rng().poisson(lam=1.0)),
-                )
-                .reset_index()
+        # The seed of the RNG is the sum three components - the (hash of) the Unit ID, the number of
+        # bootstrap samples taken so far, and a random seed set when this object is initialised.
+        # Such seeding ensures the same unit in the same bootstrap sample in the same experiment object gets the same
+        # weight, maintains the randomness of weights overall, while avoids expensive DataFrame merges/joins.
+        # See Section 2.2.4 of https://arxiv.org/pdf/1304.7406.pdf
+        self.dataset[COL_WEIGHT_RANDOMIZATION_UNIT] = (
+            self.dataset[COL_RANDOMIZATION_UNIT_ID].apply(
+                lambda ruid: np.random.default_rng(
+                    seed=abs(hash(ruid)) + self.num_weights_generated + self.random_seed).poisson(lam=1.0)
+            )
+        )
+        self.dataset[COL_WEIGHT_SECONDARY_UNIT] = (
+            self.dataset[COL_SECONDARY_UNIT_ID].apply(
+                lambda suid: np.random.default_rng(
+                    seed=abs(hash(suid)) + self.num_weights_generated + self.random_seed).poisson(lam=1.0)
+            )
         )
 
-        sum_weighted_sum = np.sum(sum_weight_df["response_sum"] * sum_weight_df["weight"])
-        count_weighted_sum = np.sum(sum_weight_df["response_count"] * sum_weight_df["weight"])
+        self.dataset[COL_WEIGHT] = self.dataset[COL_WEIGHT_RANDOMIZATION_UNIT] * self.dataset[COL_WEIGHT_SECONDARY_UNIT]
+        self.num_weights_generated += 1
 
-        self.latest_mean = sum_weighted_sum / count_weighted_sum
+        self.latest_mean = (
+            np.sum(self.dataset[self.response_col] * self.dataset[COL_WEIGHT]) /
+            np.sum(self.dataset[COL_WEIGHT])
+        )
 
         return self.latest_mean
 
     def standard_error(self, num_bootstrap_means: int = 100, verbose=False) -> float:
         """
-        Generate one one-way bootstrap standard error of `response_col`. This is done by
+        Generate one two-way bootstrap standard error of `response_col`. This is done by
         (1) Generate `num_bootsrap_means` bootstrap means
         (2) Calculate the standard _deviation_ of the bootstrap means
         The function also updates the `latest_means` and `latest_standard_error` variables.
@@ -92,10 +120,10 @@ class OnewayBootstrapStatistics(SampleStatistics):
 
     def variance(self, num_bootstrap_means: int = 100) -> float:
         """
-        Generate one one-way bootstrap sample variance of `response_col`. This is done by getting a bootstrap standard
+        Generate one two-way bootstrap sample variance of `response_col`. This is done by getting a bootstrap standard
         error (generating a fresh one if none already exists), square it, and multiply the result by the sample count.
         :param num_bootstrap_means: Number of bootstrap means used to calculated the sample standard error
-        :return:
+        :return: One sample variance from many bootstrap mean samples
         """
         if self.latest_standard_error is not None:
             se = self.latest_standard_error
@@ -127,7 +155,7 @@ class OnewayBootstrapStatistics(SampleStatistics):
                 f"{os.path.dirname(__file__)}/../../../data/" +
                 "_".join([
                     "expt",
-                    "oneway",
+                    "twoway",
                     self.dataset_name.replace("_", "-"),
                     self.response_col.replace("_", "-"),
                     str(int(time.time()))

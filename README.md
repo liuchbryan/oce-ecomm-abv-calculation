@@ -91,17 +91,17 @@ Once you are done, terminate the Jupyter server using Ctrl+C, and type `exit` to
 
 ## Notebooks
 
-This repo contain several notebooks that run the experiments, organise the results, and generate the tables and figures featured in the paper.
+This repo contains several notebooks that run the experiments, organise the results, and generate the tables and figures featured in the paper.
 
 Experiments:
 * `E01 - Vanilla and One-way Bootstrap.ipynb` runs experiments that calculates the vanilla sample standard error (SE) and their re-estimates using one-way bootstrap.
 * `E02 - Two-way Bootstrap.ipynb` runs experiments that re-estimates the SE for the average selling price (ASP) metric using two-way bootstrap.
 
 Figures:
-* `F01 - Response vs Next Response.ipynb` plots Figure 1 of the paper + the same data in other graph representations / a different scale.
-* `F02-03 - Vanilla vs Oneway Bootstrap SE.ipynb` plots Figures 2 and 3 of the paper. It also shows different way to plot the same set of data comparing the vanilla sample SEs to one-way bootstrap estimates.
+* `F01 - Response vs Next Response.ipynb` plots Figure 1 + the same data in other graph representations / a different scale.
+* `F02-03 - Vanilla vs Oneway Bootstrap SE.ipynb` plots Figures 2 and 3. It also shows different ways to plot the same set of data comparing vanilla sample SE and one-way bootstrap SE.
 * `F04 - Actual Power and CI Coverage.ipynb` plots Figures 4 of the paper.
 
 Tables:
-* `T01 - Dataset Summary.ipynb` generates the summary of the two public datasets used in the paper, which is included in Table 1 of the paper.
-* `T02 - One-way Two-way Bootstrap Comparison (ASP).ipynb` extracts the experiment data that goes in Table 2 of the paper.
+* `T01 - Dataset Summary.ipynb` generates the summary of the two public datasets used in the paper as part of Table 1.
+* `T02 - One-way Two-way Bootstrap Comparison (ASP).ipynb` extracts the experiment data in Table 2.

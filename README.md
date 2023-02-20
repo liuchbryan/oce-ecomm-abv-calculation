@@ -1,5 +1,7 @@
 # Measuring e-Commerce Metric Changes in Online Experiments
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7659092.svg)](https://doi.org/10.5281/zenodo.7659092)
+
 Codebase for the above titled paper, to appear in TheWebConf (neé WWW) 2023.
 
 **Abstract**: Digital technology organizations routinely use online experiments (e.g. A/B tests) to guide their product and business decisions. In e-commerce, we often measure changes to transaction- or item-based business metrics such as Average Basket Value (ABV), Average Basket Size (ABS), and Average Selling Price (ASP); yet it remains a common pitfall to ignore the dependency between the value/size of transactions/items during experiment design and analysis. We present empirical evidence on such dependency, its impact on measurement uncertainty, and practical implications on A/B test outcomes if left unmitigated. By making the evidence available, we hope to drive awareness of the pitfall among experimenters in e-commerce and hence encourage the adoption of established mitigation approaches. We also share lessons learned when incorporating selected mitigation approaches into our experimentation analysis platform currently in production.

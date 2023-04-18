@@ -367,6 +367,34 @@ def append_next_analysis_unit_under_same_randomization_unit(
     return return_df
 
 
+def randomly_shuffle_next_analysis_unit_rows(df: pd.DataFrame):
+    assert (
+        all([
+            required_col in df.columns
+            for required_col in [
+                "RandomizationUnitId",
+                "AnalysisUnitId",
+                "EventReceivedTime",
+                next_col_name("AnalysisUnitId"),
+                next_col_name("EventReceivedTime")
+            ]
+        ])
+    ), f"`df` is missing at least one of required columns " \
+       f"[`RandomizationUnitId`, `AnalysisUnitId`, `EventReceivedTime`, " \
+       f"`{next_col_name('AnalysisUnitId')}`, `{next_col_name('EventReceivedTime')}`]."
+
+    next_cols = [next_col_name(col) for col in df.columns if next_col_name(col) in df.columns]
+    original_cols = [col for col in df.columns if col not in next_cols]
+
+    # Keep the columns containing info of the original analysis units
+    return_df = df[original_cols].copy().reset_index(drop=True)
+
+    # Take the columns containing info of the next analysis units and shuffle them randomly row-wise
+    return_df[next_cols] = df[next_cols].sample(frac=1, replace=False).reset_index(drop=True)
+
+    return return_df
+
+
 def modify_axis_labels(sns_plot: sns.JointGrid,
                        response_col: str):
     return(

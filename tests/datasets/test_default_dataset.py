@@ -1,4 +1,3 @@
-import pandas as pd
 from oce_ecomm_abv_calculation.datasets.default_datasets import (
     get_default_dataset_by_name,
     uci_online_retail_ii_customer_order_view,
